@@ -1,6 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# This script enumerates SMTP users. It uses VRFY, EXPN, and RCPT TO methods.
 
 import socket
 
@@ -160,41 +159,42 @@ if __name__ == "__main__":
 	elif types[2]:
 		scantype = "rcpt"
 
-	print "[*] %s scan chosen for use against %s:%s" %(scantype.upper(), args.target, str(args.port)) # give info on scan back to user
+	print("[*] %s scan chosen for use against %s:%s" %(scantype.upper(), args.target, str(args.port))) # give info on scan back to user
 	# create enumerator object and apply all validated input
 	enumerator = SMTPUserEnumerator(args.target, args.file, port=int(args.port), scantype=scantype, mailfrom=args.user)
 
-	print "[*] Checking for vulnerability to %s scan... " %(scantype.upper()),;sys.stdout.flush() # begin vuln check
+	print("[*] Checking for vulnerability to %s scan... " %(scantype.upper()));sys.stdout.flush() # begin vuln check
 	try:
 		enumerator.buildSock() # build sock to target
 		check = enumerator.testScanType() # call testScanType() and store result in check
 		if check: # if testScanType() returned True
-			print "[GOOD]" # target is vulnerable
+			print("[GOOD]") # target is vulnerable
 		else: # if False is returned
-			print "[BAD]" # target is not vulnerable
+			print("[BAD]") # target is not vulnerable
 			sys.exit(1)
 	except Exception: # if an error happens (bogus target info is entered)
-		print "[FAIL]" # check failed
+		print("[FAIL]") # check failed
 		sys.exit(1) # exit
 
-	print "[*] Parsing list of users... ",;sys.stdout.flush() # tell user that file is being read
+	print("[*] Parsing list of users... ");sys.stdout.flush() # tell user that file is being read
 	try:
 		enumerator.readUsers() # call readUsers() to read, parse, and store file contents
-		print "[DONE]"
+		print("[DONE]")
 	except: # if something goes wrong
-		print "[FAIL]" # fail out and exit
+		print("[FAIL]") # fail out and exit
 		sys.exit(1)
 
-	print "[*] Trying %s users... \n" %(str(len(enumerator.userlist))) # print number of usernames to try
+	print("[*] Trying %s users... \n" %(str(len(enumerator.userlist)))) # print number of usernames to try
 	startTime = datetime.now() # start clock for scan duration
 	enumerator.buildSock() # call buildSock() to reconnect to target
-	print "Target banner: %s" %(enumerator.targetBanner) # print target banner taken on vuln check
+	print("Target banner: %s" %(enumerator.targetBanner)) # print target banner taken on vuln check
 	for i in range(len(enumerator.userlist)): # enumerate through usernames
 		result = enumerator.probeTarget(enumerator.userlist[i]) # call probeTarget() and pass current username
 		if result: # if its a good username
-			print "Found: %s" %(enumerator.userlist[i]) # report in console
+			print("Found: %s" %(enumerator.userlist[i])) # report in console
 	enumerator.closeSock() # close connection to target once scan is done
 	stopTime = datetime.now() # stop clock for scan duration
 
-	print "\n[*] Enumeration complete!" # complete scan
-	print "[*] Duration: %s" %(str(stopTime-startTime)) # calculate and print scan duration
+	print("\n[*] Enumeration complete!") # complete scan
+	print("[*] Duration: %s" %(str(stopTime-startTime))) # calculate and print scan duration
+	
